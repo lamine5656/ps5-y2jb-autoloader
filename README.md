@@ -49,7 +49,7 @@ For a fixed, automated payload chain, you can configure payloads manually:
 
 ## How to Update
 
-You can update the autoloader by simply placing **`y2jb_update.zip`** (from the [Releases page](https://github.com/itsPLK/ps5_y2jb_autoloader/releases)) on the **root** of a USB drive, and starting the app.
+You can update the autoloader by simply placing **`y2jb_update.zip`** (from the [Releases page](https://github.com/lamine5656/ps5-y2jb-autoloader/releases)) on the **root** of a USB drive, and starting the app.
 
 ## Setup Instructions
 
@@ -140,5 +140,5 @@ All unique modifications and additions in this fork are licensed under **GPL-3.0
 This tool is provided as-is for research and development purposes only. Use at your own risk. The developers are not responsible for any damage, data loss, or consequences resulting from the use of this software.
 
 ## Donate
-- [donate to PLK](DONATE.md) (creator of this autoloader)
+- [donate to L92](DONATE.md) (creator of this autoloader)
 - [donate to Gezine](https://github.com/sponsors/Gezine) (creator of the original [Y2JB](https://github.com/Gezine/Y2JB))

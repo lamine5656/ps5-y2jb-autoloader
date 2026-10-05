@@ -1,4 +1,4 @@
-// NitroJB Updater by PLK
+// NitroJB Updater by L92
 // Source: https://github.com/itsPLK/y2jb_updater
 
 async function start_update() {
@@ -784,7 +784,7 @@ async function updateIcon() {
       }
   }
 
-  log("NitroJB Updater v" + Y2JB_UPDATER_VERSION + " by PLK");
+  log("NitroJB Updater v" + Y2JB_UPDATER_VERSION + " by L92");
   await update();
 
 }

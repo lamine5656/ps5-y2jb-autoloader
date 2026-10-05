@@ -352,7 +352,7 @@ function trigger() {
         // --- Footer ---
         const footer = document.createElement("div");
         footer.id = "uiFooter";
-        footer.textContent = "NitroJB " + autoloader_version + "  ·  by PLK";
+        footer.textContent = "NitroJB " + autoloader_version + "  ·  by L92";
         footer.style.position = "absolute";
         footer.style.bottom = "26px";
         footer.style.width = "100%";
@@ -449,7 +449,7 @@ function trigger() {
     try {
         if (typeof window.autoloader_ui === 'function') {
             window.autoloader_ui();
-            window.uiLog("NitroJB Autoloader " + autoloader_version + " by PLK", "success");
+            window.uiLog("NitroJB Autoloader " + autoloader_version + " by L92", "success");
             window.updateProgress(0, "Running userland exploit...");
 
         }
