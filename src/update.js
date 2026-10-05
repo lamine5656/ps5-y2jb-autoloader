@@ -1,11 +1,11 @@
-// Y2JB Updater by PLK
+// NitroJB Updater by PLK
 // Source: https://github.com/itsPLK/y2jb_updater
 
 async function start_update() {
 
   if (!is_jailbroken()) {
-      log("[-] Device is not jailbroken, cannot proceed with Y2JB update");
-      send_notification("[-] Device is not jailbroken, cannot proceed with Y2JB update");
+      log("[-] Device is not jailbroken, cannot proceed with NitroJB update");
+      send_notification("[-] Device is not jailbroken, cannot proceed with NitroJB update");
       return;
   }
 
@@ -65,7 +65,7 @@ async function start_update() {
                   createdDirs.add(cur);
                   log("mkdir created: " + cur);
               } else {
-                  // if ret < 0, possible errno (e.g. EEXIST) — check stat again
+                  // if ret < 0, possible errno (e.g. EEXIST) â€” check stat again
                   const stat_buf2 = malloc(0x200n);
                   const st2 = syscall(SYSCALL.stat, addr, stat_buf2);
                   if (st2 === 0n) {
@@ -550,8 +550,8 @@ async function updateIcon() {
     let updatePath = null;
     for (const path of updatePaths) {
       if (file_exists(path)) {
-        log("Found Y2JB update file at: " + path);
-        send_notification("Found Y2JB update file at: " + path);
+        log("Found NitroJB update file at: " + path);
+        send_notification("Found NitroJB update file at: " + path);
         updateFound = true;
         updatePath = path;
           break;
@@ -559,11 +559,11 @@ async function updateIcon() {
     }
 
       if (!updateFound) {
-        log("No Y2JB update file found");
+        log("No NitroJB update file found");
       } else {
-        log("Starting Y2JB update from: " + updatePath);
+        log("Starting NitroJB update from: " + updatePath);
         if (typeof window.updateProgress === 'function') {
-            window.updateProgress(50, "Updating Y2JB...");
+            window.updateProgress(50, "Updating NitroJB...");
         }
         await process_update(updatePath);
 
@@ -575,7 +575,7 @@ async function updateIcon() {
               send_notification("Updater aborted due to failed verification.");
               // cleanup extracted files, don't remove update packages
 
-              await sleep(100);
+              await sleep(50);
               await cleanUp(false);
           } else {
               // proceed with renaming only if verification passed
@@ -585,7 +585,7 @@ async function updateIcon() {
                   send_notification("Failed to rename:\n" + FINAL_PATH + " ->\n" + TEMP_BACKUP + "\nAborting update.");
                   log("Failed to rename "+ FINAL_PATH + " -> " + TEMP_BACKUP + " Aborting update.");
                   // cleanup extracted files, don't remove update packages
-                  await sleep(100);
+                  await sleep(50);
                   await cleanUp(false);
                   return;
               }
@@ -599,12 +599,12 @@ async function updateIcon() {
                       send_notification("Restored original files from backup.");
                       log("Restored original files from backup.");
                   } else {
-                      send_notification("Failed to restore original files from backup!\nUse ftp to fix your Y2JB files.");
-                      log("Failed to restore original files from backup! Use ftp to fix your Y2JB files.");
+                      send_notification("Failed to restore original files from backup!\nUse ftp to fix your NitroJB files.");
+                      log("Failed to restore original files from backup! Use ftp to fix your NitroJB files.");
                   }
                   return;
               }
-              await sleep(100);
+              await sleep(50);
               if (UPDATE_DEBUG) {
                   await cleanUp(false);
               } else {
@@ -733,7 +733,7 @@ async function updateIcon() {
       }
 
 
-      await sleep(200);
+      await sleep(100);
       log("Update processing complete");
 
     } catch (e) {
@@ -784,7 +784,7 @@ async function updateIcon() {
       }
   }
 
-  log("Y2JB Updater v" + Y2JB_UPDATER_VERSION + " by PLK");
+  log("NitroJB Updater v" + Y2JB_UPDATER_VERSION + " by PLK");
   await update();
 
 }

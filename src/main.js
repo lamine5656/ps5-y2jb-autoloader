@@ -49,12 +49,12 @@ let LOG_SERVER = 'http://192.168.1.180:8080/log';
 async function checkLogServer() {
     try {
         const timeoutPromise = new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('Timeout')), 800)
+            setTimeout(() => reject(new Error('Timeout')), 250)
         );
         
         const fetchPromise = fetch(LOG_SERVER, {
             method: 'POST',
-            body: 'Log server check from Y2JB'
+            body: 'Log server check from NitroJB'
         });
         
         await Promise.race([fetchPromise, timeoutPromise]);
@@ -90,32 +90,27 @@ async function log(msg) {
     }
     
     const lines = message.split('\n');
-    lines.forEach(line => {
+    for (let i = 0; i < lines.length; i++) {
         let lineDiv = document.createElement('div');
-        lineDiv.textContent = line === '' ? '\u00A0' : line;
+        lineDiv.textContent = lines[i] === '' ? '\u00A0' : lines[i];
         lineDiv.style.fontSize = fontSize + 'px';
-        
         outputElement.appendChild(lineDiv);
-    });
+    }
     
     while (outputElement.children.length > maxLines) {
         outputElement.removeChild(outputElement.children[0]);
     }
     
-    await new Promise(resolve => {
-        requestAnimationFrame(() => {
-            setTimeout(resolve, 1);
-        });
-    });
-        
+    // Network logging is fire-and-forget: never block the exploit on a slow/host-down server
     if (NETWORK_LOGGING) {
         try {
-            await fetch(LOG_SERVER, {
-                method: 'POST',
-                body: message,
-            });
+            fetch(LOG_SERVER, { method: 'POST', body: message });
         } catch (e) { }
     }
+    
+    // Fast yield: lets the browser paint between exploit steps without the
+    // previous full-frame (requestAnimationFrame) wait, which saves ~16ms per log line.
+    await new Promise(resolve => setTimeout(resolve, 0));
 }
 
 function toHex(num) {
@@ -162,6 +157,11 @@ function trigger() {
         const baseHeight = 1080;
         const scale = window.innerWidth / baseWidth;
 
+        if (window.__nitroTimer) {
+            try { clearInterval(window.__nitroTimer); } catch (e) {}
+            window.__nitroTimer = null;
+        }
+
         const autoloader_ui = document.createElement("div");
         autoloader_ui.id = "autoloader_ui";
         autoloader_ui.style.position = "fixed";
@@ -172,95 +172,234 @@ function trigger() {
         autoloader_ui.style.transform = "scale(" + scale + ")";
         autoloader_ui.style.transformOrigin = "top left";
         autoloader_ui.style.zIndex = "9999";
-        autoloader_ui.style.backgroundColor = "#272727";
-        autoloader_ui.style.border = "1px solid black";
-        autoloader_ui.style.padding = "5px";
-        autoloader_ui.style.fontFamily = "Arial, sans-serif";
-        autoloader_ui.style.fontSize = "8px";
+        autoloader_ui.style.backgroundColor = "#0a0d16";
+        autoloader_ui.style.fontFamily = "'Segoe UI', Arial, sans-serif";
+        autoloader_ui.style.color = "#f4f7fb";
+        autoloader_ui.style.overflow = "hidden";
+        autoloader_ui.style.letterSpacing = "0.5px";
 
-        const title = document.createElement("div");
-        title.textContent = "Y2JB Autoloader";
-        title.style.fontFamily = "monospace";
-        title.style.textAlign = "center";
-        title.style.fontWeight = "bold";
-        title.style.color = "#ccc";
-        title.style.padding = "10px";
-        title.style.borderRadius = "8px";
-        title.style.marginBottom = "5px";
-        title.style.fontSize = "42px";
-        title.style.marginTop = "60px";
-        autoloader_ui.appendChild(title);
+        // --- Animated background glow layers (JS-driven for full compatibility) ---
+        function makeGlow(color, size) {
+            const g = document.createElement("div");
+            g.style.position = "absolute";
+            g.style.width = size + "px";
+            g.style.height = size + "px";
+            g.style.borderRadius = "50%";
+            g.style.background = "radial-gradient(circle, " + color + " 0%, rgba(0,0,0,0) 70%)";
+            g.style.pointerEvents = "none";
+            return g;
+        }
 
+        const glow1 = makeGlow("rgba(0,112,209,0.55)", 900);
+        glow1.style.left = "-200px";
+        glow1.style.top = "-150px";
+        const glow2 = makeGlow("rgba(0,200,255,0.30)", 700);
+        glow2.style.right = "-180px";
+        glow2.style.top = "120px";
+        const glow3 = makeGlow("rgba(0,60,150,0.45)", 800);
+        glow3.style.left = "20%";
+        glow3.style.bottom = "-260px";
+        autoloader_ui.appendChild(glow1);
+        autoloader_ui.appendChild(glow2);
+        autoloader_ui.appendChild(glow3);
+
+        // --- Main card ---
+        const card = document.createElement("div");
+        card.style.position = "absolute";
+        card.style.left = "50%";
+        card.style.top = "80px";
+        card.style.width = "1240px";
+        card.style.marginLeft = "-620px";
+        card.style.backgroundColor = "rgba(18,23,36,0.92)";
+        card.style.borderRadius = "32px";
+        card.style.border = "1px solid rgba(0,112,209,0.35)";
+        card.style.boxShadow = "0 0 80px rgba(0,112,209,0.25), inset 0 0 40px rgba(0,0,0,0.35)";
+        card.style.padding = "56px 70px 34px 70px";
+        autoloader_ui.appendChild(card);
+
+        // --- Brand ---
+        const brand = document.createElement("div");
+        brand.textContent = "NITROJB";
+        brand.style.textAlign = "center";
+        brand.style.fontSize = "108px";
+        brand.style.fontWeight = "800";
+        brand.style.letterSpacing = "8px";
+        brand.style.lineHeight = "1";
+        brand.style.color = "#4fb4ff";
+        brand.style.textShadow = "0 0 70px rgba(0,150,255,0.7), 0 0 20px rgba(0,200,255,0.8)";
+        card.appendChild(brand);
+
+        const sub = document.createElement("div");
+        sub.textContent = "PS5 AUTOLOADER";
+        sub.style.textAlign = "center";
+        sub.style.fontSize = "26px";
+        sub.style.fontWeight = "600";
+        sub.style.letterSpacing = "20px";
+        sub.style.color = "#8aa0c0";
+        sub.style.marginTop = "12px";
+        sub.style.marginLeft = "10px";
+        card.appendChild(sub);
+
+        // --- Status row ---
+        const statusRow = document.createElement("div");
+        statusRow.style.textAlign = "center";
+        statusRow.style.marginTop = "36px";
+        card.appendChild(statusRow);
+
+        const statusDot = document.createElement("div");
+        statusDot.id = "statusDot";
+        statusDot.style.display = "inline-block";
+        statusDot.style.width = "20px";
+        statusDot.style.height = "20px";
+        statusDot.style.borderRadius = "50%";
+        statusDot.style.backgroundColor = "#00c8ff";
+        statusDot.style.boxShadow = "0 0 24px #00c8ff";
+        statusDot.style.marginRight = "16px";
+        statusDot.style.verticalAlign = "middle";
+        statusRow.appendChild(statusDot);
+
+        const statusText = document.createElement("span");
+        statusText.id = "statusText";
+        statusText.textContent = "BOOTING";
+        statusText.style.fontSize = "26px";
+        statusText.style.fontWeight = "700";
+        statusText.style.letterSpacing = "10px";
+        statusText.style.color = "#bcd2f0";
+        statusText.style.verticalAlign = "middle";
+        statusRow.appendChild(statusText);
+
+        // --- Progress bar ---
+        const progressBarContainer = document.createElement("div");
+        progressBarContainer.style.width = "1100px";
+        progressBarContainer.style.height = "58px";
+        progressBarContainer.style.backgroundColor = "rgba(6,9,15,0.95)";
+        progressBarContainer.style.border = "1px solid rgba(0,150,255,0.45)";
+        progressBarContainer.style.borderRadius = "29px";
+        progressBarContainer.style.margin = "44px auto 0 auto";
+        progressBarContainer.style.overflow = "hidden";
+        progressBarContainer.style.position = "relative";
+        progressBarContainer.style.boxShadow = "inset 0 0 30px rgba(0,0,0,0.7), 0 0 30px rgba(0,112,209,0.20)";
+        autoloader_ui.appendChild(progressBarContainer);
+
+        const progressBar = document.createElement("div");
+        progressBar.id = "progressBar";
+        progressBar.style.width = "100%";
+        progressBar.style.height = "100%";
+        progressBar.style.position = "relative";
+        progressBar.style.backgroundColor = "#007acc";
+        progressBar.style.background = "linear-gradient(90deg, #00439c 0%, #0070d1 40%, #00c3ff 100%)";
+        progressBar.style.transformOrigin = "left";
+        progressBar.style.transform = "scaleX(0)";
+        progressBar.style.transition = "transform 0.3s ease-in-out";
+        progressBarContainer.appendChild(progressBar);
+
+        const progressShine = document.createElement("div");
+        progressShine.id = "progressShine";
+        progressShine.style.position = "absolute";
+        progressShine.style.left = "0";
+        progressShine.style.top = "0";
+        progressShine.style.width = "100%";
+        progressShine.style.height = "100%";
+        progressShine.style.background = "linear-gradient(100deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0) 100%)";
+        progressShine.style.transform = "translateX(-100%)";
+        progressShine.style.pointerEvents = "none";
+        progressBar.appendChild(progressShine);
+
+        const progressLabel = document.createElement("div");
+        progressLabel.id = "progressLabel";
+        progressLabel.textContent = "INITIALIZING...";
+        progressLabel.style.position = "absolute";
+        progressLabel.style.top = "50%";
+        progressLabel.style.left = "50%";
+        progressLabel.style.transform = "translate(-50%, -50%)";
+        progressLabel.style.color = "#ffffff";
+        progressLabel.style.fontSize = "30px";
+        progressLabel.style.fontWeight = "700";
+        progressLabel.style.letterSpacing = "3px";
+        progressLabel.style.zIndex = "2";
+        progressLabel.style.textShadow = "0 2px 12px rgba(0,0,0,0.6)";
+        progressLabel.style.whiteSpace = "nowrap";
+        progressBarContainer.appendChild(progressLabel);
+
+        // --- Log panel (glass) ---
         const logWrapper = document.createElement("div");
-        logWrapper.style.width = "62%";
-        logWrapper.style.height = "62%";        
-        logWrapper.style.position = "relative";
-        logWrapper.style.margin = "20px auto 0 auto";
-        logWrapper.style.padding = "0px";
-        logWrapper.style.color = "#ccc";
-        logWrapper.style.backgroundColor = "#000";
-        logWrapper.style.fontFamily = "monospace";
-        logWrapper.style.fontSize = "28px";
-        logWrapper.style.overflow = "hidden";
-        logWrapper.style.border = "2px solid red";
-        logWrapper.style.borderRadius = "8px";
-        logWrapper.style.overflowY = "scroll";
         logWrapper.id = "logWrapper";
+        logWrapper.style.width = "1100px";
+        logWrapper.style.height = "420px";
+        logWrapper.style.position = "relative";
+        logWrapper.style.margin = "28px auto 0 auto";
+        logWrapper.style.padding = "0px";
+        logWrapper.style.color = "#cfe0f7";
+        logWrapper.style.backgroundColor = "rgba(8,11,18,0.78)";
+        logWrapper.style.fontFamily = "'Consolas', 'Courier New', monospace";
+        logWrapper.style.fontSize = "25px";
+        logWrapper.style.overflowY = "scroll";
+        logWrapper.style.border = "1px solid rgba(0,150,255,0.30)";
+        logWrapper.style.borderRadius = "22px";
+        logWrapper.style.boxShadow = "inset 0 0 40px rgba(0,0,0,0.5)";
         autoloader_ui.appendChild(logWrapper);
 
         const logContainer = document.createElement("div");
         logContainer.id = "logContainer";
         logContainer.style.position = "absolute";
         logContainer.style.bottom = "0";
-        logContainer.style.padding = "10px";
+        logContainer.style.left = "0";
+        logContainer.style.width = "100%";
+        logContainer.style.padding = "18px 24px";
+        logContainer.style.boxSizing = "border-box";
         logWrapper.appendChild(logContainer);
 
-        const progressBarContainer = document.createElement("div");
-        progressBarContainer.style.width = "60%";
-        progressBarContainer.style.height = "100px";
-        progressBarContainer.style.backgroundColor = "#202020";
-        progressBarContainer.style.border = "2px solid red";
-        progressBarContainer.style.borderRadius = "16px";
-        progressBarContainer.style.margin = "0 auto";
-        progressBarContainer.style.overflow = "hidden";
-        progressBarContainer.style.position = "relative";
-        progressBarContainer.style.marginTop = "30px";
-        autoloader_ui.appendChild(progressBarContainer);
-
-        const progressLabel = document.createElement("div");
-        progressLabel.id = "progressLabel";
-        progressLabel.textContent = "Loading...";
-        progressLabel.style.position = "absolute";
-        progressLabel.style.top = "50%";
-        progressLabel.style.left = "50%";
-        progressLabel.style.transform = "translate(-50%, -50%)";
-        progressLabel.style.color = "#fff";
-        progressLabel.style.fontSize = "42px";
-        progressLabel.style.fontWeight = "bold";
-        progressLabel.style.zIndex = "1";
-        progressBarContainer.appendChild(progressLabel);
-
-        const progressBar = document.createElement("div");
-        progressBar.id = "progressBar";
-        progressBar.style.width = "100%";
-        progressBar.style.height = "100%";
-        progressBar.style.backgroundColor = "#aa0000";
-        progressBar.style.transformOrigin = "left";
-        progressBar.style.transform = "scaleX(0)";
-        progressBar.style.transition = "transform 0.5s ease-in-out";
-        progressBarContainer.appendChild(progressBar);
+        // --- Footer ---
+        const footer = document.createElement("div");
+        footer.id = "uiFooter";
+        footer.textContent = "NitroJB " + autoloader_version + "  ·  by PLK";
+        footer.style.position = "absolute";
+        footer.style.bottom = "26px";
+        footer.style.width = "100%";
+        footer.style.textAlign = "center";
+        footer.style.fontSize = "22px";
+        footer.style.color = "#5f7399";
+        footer.style.letterSpacing = "2px";
+        autoloader_ui.appendChild(footer);
 
         document.body.appendChild(autoloader_ui);
+
+        // --- Hyper-active animation loop (JS-driven for max speed/compat) ---
+        let frame = 0;
+        window.__nitroTimer = setInterval(function() {
+            frame++;
+            const t = frame * 0.07;
+
+            glow1.style.transform = "translate(" + (Math.sin(t) * 60) + "px," + (Math.cos(t * 0.8) * 40) + "px) scale(" + (1 + Math.sin(t * 0.5) * 0.08) + ")";
+            glow2.style.transform = "translate(" + (Math.sin(t * 1.3) * 70) + "px," + (Math.cos(t) * 50) + "px) scale(" + (1 + Math.cos(t * 0.6) * 0.1) + ")";
+            glow3.style.transform = "translate(" + (Math.cos(t * 0.9) * 50) + "px," + (Math.sin(t * 0.7) * 45) + "px) scale(" + (1 + Math.cos(t * 0.4) * 0.12) + ")";
+
+            const shine = document.getElementById("progressShine");
+            if (shine) {
+                shine.style.transform = "translateX(" + (-100 + (frame % 200) * 1.0) + "%)";
+            }
+
+            const dot = document.getElementById("statusDot");
+            if (dot) {
+                const pulse = 1 + Math.sin(t * 2.2) * 0.25;
+                dot.style.transform = "scale(" + pulse + ")";
+                dot.style.opacity = String(0.6 + Math.sin(t * 2.2) * 0.4);
+            }
+        }, 40);
     };
 
     window.updateProgress = function(percent, message="Loading...") {
         const progressBar = document.getElementById("progressBar");
         if (progressBar) {
-            progressBar.style.transform = 'scaleX(' + percent/100 + ')';
+            progressBar.style.transform = 'scaleX(' + Math.max(0, Math.min(100, percent)) / 100 + ')';
         }
         const progressLabel = document.getElementById("progressLabel");
         if (progressLabel) {
             progressLabel.textContent = message;
+        }
+        const statusText = document.getElementById("statusText");
+        if (statusText) {
+            statusText.textContent = String(message).toUpperCase();
         }
         window.uiLog(message, "warning");
     };
@@ -273,17 +412,20 @@ function trigger() {
         if (logContainer) {
             const logEntry = document.createElement("div");
             if (type === "error") {
-                logEntry.style.color = "red";
+                logEntry.style.color = "#ff5a5f";
             } else if (type === "success") {
-                logEntry.style.color = "lightgreen";
+                logEntry.style.color = "#3ddc97";
             } else if (type === "warning") {
-                logEntry.style.color = "yellow";
+                logEntry.style.color = "#ffc94d";
             } else {
-                logEntry.style.color = "#ccc";
+                logEntry.style.color = "#cfe0f7";
             }
             logEntry.textContent = message;
+            logEntry.style.lineHeight = "1.35";
+            logEntry.style.marginBottom = "4px";
+            logEntry.style.textShadow = "0 0 10px rgba(0,0,0,0.4)";
             logContainer.appendChild(logEntry);
-            if (logContainer.childElementCount > 20) {
+            if (logContainer.childElementCount > 30) {
                 logContainer.removeChild(logContainer.firstChild);
             }
             const logWrapper = document.getElementById("logWrapper");
@@ -294,6 +436,10 @@ function trigger() {
     };
 
     window.hideUI = function() {
+        if (window.__nitroTimer) {
+            try { clearInterval(window.__nitroTimer); } catch (e) {}
+            window.__nitroTimer = null;
+        }
         if (document.getElementById("autoloader_ui")) {
             const existing_ui = document.getElementById("autoloader_ui");
             existing_ui.parentNode.removeChild(existing_ui);
@@ -303,7 +449,7 @@ function trigger() {
     try {
         if (typeof window.autoloader_ui === 'function') {
             window.autoloader_ui();
-            window.uiLog("Y2JB Autoloader " + autoloader_version + " by PLK", "success");
+            window.uiLog("NitroJB Autoloader " + autoloader_version + " by PLK", "success");
             window.updateProgress(0, "Running userland exploit...");
 
         }
@@ -1222,7 +1368,7 @@ function trigger() {
 
         await start_update();
         await start_icon_update();
-        await sleep(1000);
+        await sleep(300);
         await start_autoload();
 
         if (typeof window.updateProgress === 'function') {

@@ -92,7 +92,7 @@ async function start_autoload() {
         break;
       }
     }
-    await sleep(200);
+    await sleep(100);
   }
 
   if (!loader_active) {

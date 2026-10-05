@@ -25,7 +25,7 @@
 
 async function start_lapse() {
     try {
-        const lapse_version = "Y2JB Lapse 2.0 by Gezine";
+        const lapse_version = "NitroJB Lapse 2.0 by Gezine";
         
         let failcheck_path;
 
@@ -1704,8 +1704,8 @@ async function start_lapse() {
         await log(lapse_version);
         
         if(typeof load_aioshellcode === "undefined") {
-            await log("Update Y2JB to at least 1.4 version");
-            send_notification("Update Y2JB to at least 1.4 version");
+            await log("Update NitroJB to at least 1.4 version");
+            send_notification("Update NitroJB to at least 1.4 version");
             return false;
         }
         

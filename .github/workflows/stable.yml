@@ -23,7 +23,15 @@ jobs:
 
       - name: Build Package
         id: build_package
-        run: ./build.sh --stable --download-deps
+        run: |
+          # Self-contained build: fetch pinned dependency binaries directly (no submodules needed)
+          curl -sL -o src/elfldr-ps5-v0.26-bb1e117.elf https://github.com/itsPLK/ps5-elfldr/releases/download/v0.26-bb1e117/elfldr-ps5-v0.26-bb1e117.elf
+          curl -sL -o src/kexp-v0.8-24cf6e5.bin https://github.com/itsPLK/ps5-kexp/releases/download/v0.8-24cf6e5/kexp-v0.8-24cf6e5.bin
+          curl -sL -o src/ps5-unified-autoloader.elf https://github.com/itsPLK/ps5-unified-autoloader/releases/download/v0.1.5-915a65e/ps5-unified-autoloader-v0.1.5-915a65e.elf
+          make all BUILD_TYPE=stable
+          echo "elfldr_ver=v0.26-bb1e117" >> "$GITHUB_OUTPUT"
+          echo "kexp_ver=v0.8-24cf6e5" >> "$GITHUB_OUTPUT"
+          echo "unified_autoloader_ver=v0.1.5-915a65e" >> "$GITHUB_OUTPUT"
 
       - name: Prepare download0 directory
         run: |
