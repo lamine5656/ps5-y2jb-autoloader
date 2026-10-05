@@ -1,7 +1,7 @@
 <p align="center">
  <img src="./src/icon0.png" width="128" />
 </p>
-<h1 align="center">PS5 NitroJB Autoloader</h1>
+<h1 align="center">PS5 L92 Autoloader</h1>
 <h3 align="center">A modern, fast &amp; hyper-active fork of <a href="https://github.com/Gezine/Y2JB">Y2JB</a></h3>
 &nbsp;
 <p align="center">Automatically loads the kernel exploit and your elf payloads.<br>Supports PS5 firmwares 4.03-13.60</p>

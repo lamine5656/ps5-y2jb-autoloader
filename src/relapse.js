@@ -188,8 +188,8 @@ async function start_relapse() {
             for (const k in need_val)
                 if (need_val[k] === "undefined") missing.push(k);
             if (missing.length)
-                fatal("NitroJB helpers missing: " + missing.join(", ") +
-                    " (update NitroJB and retry)");
+                fatal("L92 helpers missing: " + missing.join(", ") +
+                    " (update L92 and retry)");
             const need_gadgets = ["ret", "pop_rax", "pop_rdi", "pop_rsi",
                 "pop_rdx", "pop_rcx", "pop_r8", "pop_r9", "mov_qword_rdi_rax"];
             const no_gadget = need_gadgets.filter((g) => !ROP[g]);
@@ -633,9 +633,9 @@ async function start_relapse() {
                 title + "; find_file=" + (typeof find_file) + ", read_file=" +
                 (typeof read_file) + ", file_exists=" + (typeof file_exists) +
                 "; cache dir " + CACHE_SUBDIR + "). Probed:\n  " +
-                tried.join("\n  ") + "\nIf the sandbox cache is empty, NitroJB's " +
+                tried.join("\n  ") + "\nIf the sandbox cache is empty, L92's " +
                 "payload files were evicted - re-install/re-copy them (see the " +
-                "NitroJB setup).");
+                "L92 setup).");
         }
         const KEXP_SIG = {
             size: 18912,
@@ -6205,9 +6205,9 @@ async function start_relapse() {
         }
         if (typeof read_file !== "function")
             fatal("read_file is not in scope - the kexp/elfldr delivery reads " +
-                "them from the NitroJB sandbox slot");
+                "them from the L92 sandbox slot");
         if (typeof Thrd_create === "undefined" || typeof Thrd_join === "undefined")
-            fatal("Thrd_create/Thrd_join are not in scope (NitroJB framework too old?)");
+            fatal("Thrd_create/Thrd_join are not in scope (L92 framework too old?)");
         const fw = String(FW_VERSION);
         const picked = pick_offsets(fw);
         const off = picked.off;

@@ -54,7 +54,7 @@ async function checkLogServer() {
         
         const fetchPromise = fetch(LOG_SERVER, {
             method: 'POST',
-            body: 'Log server check from NitroJB'
+            body: 'Log server check from L92'
         });
         
         await Promise.race([fetchPromise, timeoutPromise]);
@@ -219,11 +219,11 @@ function trigger() {
 
         // --- Brand ---
         const brand = document.createElement("div");
-        brand.textContent = "NITROJB";
+        brand.textContent = "L92";
         brand.style.textAlign = "center";
-        brand.style.fontSize = "108px";
-        brand.style.fontWeight = "800";
-        brand.style.letterSpacing = "8px";
+        brand.style.fontSize = "150px";
+        brand.style.fontWeight = "900";
+        brand.style.letterSpacing = "4px";
         brand.style.lineHeight = "1";
         brand.style.color = "#4fb4ff";
         brand.style.textShadow = "0 0 70px rgba(0,150,255,0.7), 0 0 20px rgba(0,200,255,0.8)";
@@ -268,6 +268,38 @@ function trigger() {
         statusText.style.verticalAlign = "middle";
         statusRow.appendChild(statusText);
 
+        const spinner = document.createElement("div");
+        spinner.id = "uiSpinner";
+        spinner.style.display = "inline-block";
+        spinner.style.width = "28px";
+        spinner.style.height = "28px";
+        spinner.style.borderRadius = "50%";
+        spinner.style.border = "3px solid rgba(0,200,255,0.22)";
+        spinner.style.borderTopColor = "#00c8ff";
+        spinner.style.marginLeft = "20px";
+        spinner.style.verticalAlign = "middle";
+        spinner.style.boxShadow = "0 0 18px rgba(0,200,255,0.4)";
+        statusRow.appendChild(spinner);
+
+        const stageRow = document.createElement("div");
+        stageRow.style.textAlign = "center";
+        stageRow.style.marginTop = "18px";
+        card.appendChild(stageRow);
+
+        const stageBadge = document.createElement("div");
+        stageBadge.id = "stageBadge";
+        stageBadge.textContent = "USERLAND EXPLOIT";
+        stageBadge.style.display = "inline-block";
+        stageBadge.style.padding = "8px 28px";
+        stageBadge.style.borderRadius = "22px";
+        stageBadge.style.backgroundColor = "rgba(0,112,209,0.18)";
+        stageBadge.style.border = "1px solid rgba(0,200,255,0.40)";
+        stageBadge.style.color = "#7fd4ff";
+        stageBadge.style.fontSize = "22px";
+        stageBadge.style.fontWeight = "700";
+        stageBadge.style.letterSpacing = "4px";
+        stageRow.appendChild(stageBadge);
+
         // --- Progress bar ---
         const progressBarContainer = document.createElement("div");
         progressBarContainer.style.width = "1100px";
@@ -290,7 +322,7 @@ function trigger() {
         progressBar.style.background = "linear-gradient(90deg, #00439c 0%, #0070d1 40%, #00c3ff 100%)";
         progressBar.style.transformOrigin = "left";
         progressBar.style.transform = "scaleX(0)";
-        progressBar.style.transition = "transform 0.3s ease-in-out";
+        progressBar.style.transition = "transform 0.2s ease-in-out";
         progressBarContainer.appendChild(progressBar);
 
         const progressShine = document.createElement("div");
@@ -352,7 +384,7 @@ function trigger() {
         // --- Footer ---
         const footer = document.createElement("div");
         footer.id = "uiFooter";
-        footer.textContent = "NitroJB " + autoloader_version + "  ·  by L92";
+        footer.textContent = "L92 Autoloader " + autoloader_version;
         footer.style.position = "absolute";
         footer.style.bottom = "26px";
         footer.style.width = "100%";
@@ -385,13 +417,19 @@ function trigger() {
                 dot.style.transform = "scale(" + pulse + ")";
                 dot.style.opacity = String(0.6 + Math.sin(t * 2.2) * 0.4);
             }
+
+            const sp = document.getElementById("uiSpinner");
+            if (sp) {
+                sp.style.transform = "rotate(" + (frame * 10) + "deg)";
+            }
         }, 40);
     };
 
     window.updateProgress = function(percent, message="Loading...") {
+        const p = Math.max(0, Math.min(100, percent));
         const progressBar = document.getElementById("progressBar");
         if (progressBar) {
-            progressBar.style.transform = 'scaleX(' + Math.max(0, Math.min(100, percent)) / 100 + ')';
+            progressBar.style.transform = 'scaleX(' + p/100 + ')';
         }
         const progressLabel = document.getElementById("progressLabel");
         if (progressLabel) {
@@ -400,6 +438,14 @@ function trigger() {
         const statusText = document.getElementById("statusText");
         if (statusText) {
             statusText.textContent = String(message).toUpperCase();
+        }
+        const stageBadge = document.getElementById("stageBadge");
+        if (stageBadge) {
+            let stage = "USERLAND EXPLOIT";
+            if (p >= 100) stage = "COMPLETE";
+            else if (p >= 50) stage = "PAYLOAD LOAD";
+            else if (p >= 20) stage = "KERNEL EXPLOIT";
+            stageBadge.textContent = stage;
         }
         window.uiLog(message, "warning");
     };
@@ -449,7 +495,7 @@ function trigger() {
     try {
         if (typeof window.autoloader_ui === 'function') {
             window.autoloader_ui();
-            window.uiLog("NitroJB Autoloader " + autoloader_version + " by L92", "success");
+            window.uiLog("L92 Autoloader " + autoloader_version + " by L92", "success");
             window.updateProgress(0, "Running userland exploit...");
 
         }
