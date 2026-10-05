@@ -1,11 +1,11 @@
-// L92 Updater by L92
+// NitroJB Updater by L92
 // Source: https://github.com/itsPLK/y2jb_updater
 
 async function start_update() {
 
   if (!is_jailbroken()) {
-      log("[-] Device is not jailbroken, cannot proceed with L92 update");
-      send_notification("[-] Device is not jailbroken, cannot proceed with L92 update");
+      log("[-] Device is not jailbroken, cannot proceed with NitroJB update");
+      send_notification("[-] Device is not jailbroken, cannot proceed with NitroJB update");
       return;
   }
 
@@ -550,8 +550,8 @@ async function updateIcon() {
     let updatePath = null;
     for (const path of updatePaths) {
       if (file_exists(path)) {
-        log("Found L92 update file at: " + path);
-        send_notification("Found L92 update file at: " + path);
+        log("Found NitroJB update file at: " + path);
+        send_notification("Found NitroJB update file at: " + path);
         updateFound = true;
         updatePath = path;
           break;
@@ -559,11 +559,11 @@ async function updateIcon() {
     }
 
       if (!updateFound) {
-        log("No L92 update file found");
+        log("No NitroJB update file found");
       } else {
-        log("Starting L92 update from: " + updatePath);
+        log("Starting NitroJB update from: " + updatePath);
         if (typeof window.updateProgress === 'function') {
-            window.updateProgress(50, "Updating L92...");
+            window.updateProgress(50, "Updating NitroJB...");
         }
         await process_update(updatePath);
 
@@ -599,8 +599,8 @@ async function updateIcon() {
                       send_notification("Restored original files from backup.");
                       log("Restored original files from backup.");
                   } else {
-                      send_notification("Failed to restore original files from backup!\nUse ftp to fix your L92 files.");
-                      log("Failed to restore original files from backup! Use ftp to fix your L92 files.");
+                      send_notification("Failed to restore original files from backup!\nUse ftp to fix your NitroJB files.");
+                      log("Failed to restore original files from backup! Use ftp to fix your NitroJB files.");
                   }
                   return;
               }
@@ -784,7 +784,7 @@ async function updateIcon() {
       }
   }
 
-  log("L92 Updater v" + Y2JB_UPDATER_VERSION + " by L92");
+  log("NitroJB Updater v" + Y2JB_UPDATER_VERSION + " by L92");
   await update();
 
 }

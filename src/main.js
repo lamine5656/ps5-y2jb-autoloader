@@ -54,7 +54,7 @@ async function checkLogServer() {
         
         const fetchPromise = fetch(LOG_SERVER, {
             method: 'POST',
-            body: 'Log server check from L92'
+            body: 'Log server check from NitroJB'
         });
         
         await Promise.race([fetchPromise, timeoutPromise]);
@@ -217,13 +217,43 @@ function trigger() {
         card.style.padding = "56px 70px 34px 70px";
         autoloader_ui.appendChild(card);
 
+        // --- Corner accents (cyber glow) ---
+        function makeCorner(horiz, vert) {
+            const c = document.createElement("div");
+            c.style.position = "absolute";
+            c.style.width = "70px";
+            c.style.height = "70px";
+            c.style.borderRadius = "12px";
+            c.style.pointerEvents = "none";
+            c.style.borderTop = "3px solid #00c8ff";
+            c.style.borderLeft = "3px solid #00c8ff";
+            c.style.boxShadow = "0 0 24px rgba(0,200,255,0.5)";
+            if (horiz === "right") {
+                c.style.right = "18px";
+                c.style.transform = "scaleX(-1)";
+            } else {
+                c.style.left = "18px";
+            }
+            if (vert === "bottom") {
+                c.style.bottom = "18px";
+                c.style.transform = (horiz === "right" ? "scaleX(-1) scaleY(-1)" : "scaleY(-1)");
+            } else {
+                c.style.top = "18px";
+            }
+            return c;
+        }
+        card.appendChild(makeCorner("left", "top"));
+        card.appendChild(makeCorner("right", "top"));
+        card.appendChild(makeCorner("left", "bottom"));
+        card.appendChild(makeCorner("right", "bottom"));
+
         // --- Brand ---
         const brand = document.createElement("div");
-        brand.textContent = "L92";
+        brand.textContent = "NITROJB";
         brand.style.textAlign = "center";
-        brand.style.fontSize = "150px";
-        brand.style.fontWeight = "900";
-        brand.style.letterSpacing = "4px";
+        brand.style.fontSize = "108px";
+        brand.style.fontWeight = "800";
+        brand.style.letterSpacing = "8px";
         brand.style.lineHeight = "1";
         brand.style.color = "#4fb4ff";
         brand.style.textShadow = "0 0 70px rgba(0,150,255,0.7), 0 0 20px rgba(0,200,255,0.8)";
@@ -239,6 +269,18 @@ function trigger() {
         sub.style.marginTop = "12px";
         sub.style.marginLeft = "10px";
         card.appendChild(sub);
+
+        const tagline = document.createElement("div");
+        tagline.id = "uiTagline";
+        tagline.textContent = "HYPER FAST · HYPER ACTIVE";
+        tagline.style.textAlign = "center";
+        tagline.style.fontSize = "20px";
+        tagline.style.fontWeight = "600";
+        tagline.style.letterSpacing = "6px";
+        tagline.style.color = "#00c8ff";
+        tagline.style.marginTop = "16px";
+        tagline.style.textShadow = "0 0 16px rgba(0,200,255,0.5)";
+        card.appendChild(tagline);
 
         // --- Status row ---
         const statusRow = document.createElement("div");
@@ -384,7 +426,7 @@ function trigger() {
         // --- Footer ---
         const footer = document.createElement("div");
         footer.id = "uiFooter";
-        footer.textContent = "L92 Autoloader " + autoloader_version;
+        footer.textContent = "NitroJB " + autoloader_version + "  ·  by L92";
         footer.style.position = "absolute";
         footer.style.bottom = "26px";
         footer.style.width = "100%";
@@ -422,6 +464,12 @@ function trigger() {
             if (sp) {
                 sp.style.transform = "rotate(" + (frame * 10) + "deg)";
             }
+
+            const tag = document.getElementById("uiTagline");
+            if (tag) {
+                tag.style.opacity = String(0.7 + Math.sin(t * 3.0) * 0.3);
+                tag.style.textShadow = "0 0 " + (10 + Math.sin(t * 3.0) * 8) + "px rgba(0,200,255,0.6)";
+            }
         }, 40);
     };
 
@@ -457,18 +505,23 @@ function trigger() {
         const logContainer = document.getElementById("logContainer");
         if (logContainer) {
             const logEntry = document.createElement("div");
+            logEntry.style.borderLeft = "4px solid #3d6da8";
+            logEntry.style.paddingLeft = "12px";
+            logEntry.style.marginBottom = "6px";
             if (type === "error") {
                 logEntry.style.color = "#ff5a5f";
+                logEntry.style.borderLeftColor = "#ff5a5f";
             } else if (type === "success") {
                 logEntry.style.color = "#3ddc97";
+                logEntry.style.borderLeftColor = "#3ddc97";
             } else if (type === "warning") {
                 logEntry.style.color = "#ffc94d";
+                logEntry.style.borderLeftColor = "#ffc94d";
             } else {
                 logEntry.style.color = "#cfe0f7";
             }
             logEntry.textContent = message;
             logEntry.style.lineHeight = "1.35";
-            logEntry.style.marginBottom = "4px";
             logEntry.style.textShadow = "0 0 10px rgba(0,0,0,0.4)";
             logContainer.appendChild(logEntry);
             if (logContainer.childElementCount > 30) {
@@ -495,7 +548,7 @@ function trigger() {
     try {
         if (typeof window.autoloader_ui === 'function') {
             window.autoloader_ui();
-            window.uiLog("L92 Autoloader " + autoloader_version + " by L92", "success");
+            window.uiLog("NitroJB Autoloader " + autoloader_version + " by L92", "success");
             window.updateProgress(0, "Running userland exploit...");
 
         }
