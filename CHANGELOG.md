@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.2.5-l92 (sync Y2JB v1.3.1)
+- Ported the Y2JB update into this build while keeping the custom HUD UI, icon0/background and pic1 flow intact
+- New: relapse kernel exploit now supports **firmware 11.40** (offsets block ported from Y2JB v1.3.1; repo `relapse.js` now byte-identical to the upstream merged build)
+- New: `global.js` SYSCALL table gained the v1.3.1 entries: `socketpair`, `getrlimit`, `setrlimit`, `aio_multi_wait`, `aio_multi_poll`, `aio_multi_cancel`, `aio_submit_cmd`
+- Speed / UI / icon0 + background + pic1 from v1.2.0-v1.2.4 unchanged
+
 ## v1.2.4-l92 (hover background attempt)
 - splash_screen cache only contained loader files -> hover background is not there
 - New: writes user background as `pic1.png` (1920x1080, custom-covers convention) into `/user/appmeta/{tid}/` via both update flows, with unlink + readback verification and explicit notifications
